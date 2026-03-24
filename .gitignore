@@ -1,0 +1,12 @@
+# Local settings
+appsettings.Local.json
+
+# Copilot snapshots
+.copilot-codespacesInternal-snapshots/
+
+# Visual Studio
+.vs/
+
+# Build output
+bin/
+obj/
