@@ -1,5 +1,6 @@
 # Local settings
 appsettings.Local.json
+.env
 
 # Copilot snapshots
 .copilot-codespacesInternal-snapshots/
