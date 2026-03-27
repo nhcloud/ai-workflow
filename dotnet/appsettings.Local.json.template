@@ -1,4 +1,5 @@
 {
+  "TICKETS_PATH": "..\\data\\tickets.json",
   "AzureOpenAI": {
     "Endpoint": "https://your-resource.openai.azure.com/",
     "DeploymentName": "gpt-4o-mini",

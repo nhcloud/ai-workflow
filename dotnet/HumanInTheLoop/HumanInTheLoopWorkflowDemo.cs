@@ -41,17 +41,28 @@ public static class HumanInTheLoopWorkflowDemo
         // Build the workflow
         var workflow = BuildWorkflow(chatClient);
 
-        // Sample support ticket
-        var sampleTicket = new SupportTicket(
-            TicketId: "TKT-78542",
-            CustomerId: "CUST-12345",
-            CustomerName: "Sarah Johnson",
-            Subject: "Request for full refund on subscription",
-            Description: "I signed up for the annual premium plan last week but the features don't work as advertised. " +
-                         "The video conferencing keeps dropping and the file storage is extremely slow. " +
-                         "I want a full refund and to cancel my subscription immediately.",
-            Priority: TicketPriority.High
-        );
+        // Load a ticket from the data file
+        await TicketLoader.DisplayAvailableTicketsAsync();
+        Console.WriteLine();
+        Console.Write("Enter ticket number (1-5) or press Enter for random: ");
+        var input = Console.ReadLine()?.Trim();
+        
+        SupportTicket sampleTicket;
+        if (string.IsNullOrEmpty(input))
+        {
+            sampleTicket = await TicketLoader.GetRandomTicketAsync();
+            Console.WriteLine($"Randomly selected: {sampleTicket.TicketId}");
+        }
+        else if (int.TryParse(input, out int index))
+        {
+            sampleTicket = await TicketLoader.GetTicketByIndexAsync(index);
+        }
+        else
+        {
+            sampleTicket = await TicketLoader.GetTicketByIdAsync(input) 
+                ?? await TicketLoader.GetRandomTicketAsync();
+        }
+        Console.WriteLine();
 
         Console.WriteLine("Incoming Support Ticket:");
         Console.WriteLine($"   Ticket ID: {sampleTicket.TicketId}");
