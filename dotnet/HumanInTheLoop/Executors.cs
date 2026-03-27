@@ -35,7 +35,7 @@ internal sealed class HumanInTheLoopTicketIntakeExecutor() : Executor<SupportTic
             """;
 
         await context.SendMessageAsync(new ChatMessage(ChatRole.User, ticketText), cancellationToken);
-        await context.SendMessageAsync(new TurnToken(emitEvents: true), cancellationToken);
+        await context.SendMessageAsync(new TurnToken(), cancellationToken);
     }
 }
 

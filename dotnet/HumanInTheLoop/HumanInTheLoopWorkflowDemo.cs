@@ -67,41 +67,25 @@ public static class HumanInTheLoopWorkflowDemo
         {
             switch (evt)
             {
-                case ExecutorFailedEvent failedEvt:
-                    Console.WriteLine($"[ERROR] Executor '{failedEvt.ExecutorId}' failed: {failedEvt.Data}");
-                    break;
-
-                case WorkflowErrorEvent errorEvt:
-                    Console.WriteLine($"[ERROR] Workflow error: {errorEvt.Exception}");
-                    break;
-
-                case ExecutorCompletedEvent completedEvt:
-                    Console.WriteLine($"[{completedEvt.ExecutorId}] completed (data: {completedEvt.Data?.GetType().Name ?? "null"})");
-                    break;
-
                 case RequestInfoEvent requestInputEvt:
                     // Handle human supervisor review request
-                    ExternalResponse response = HandleSupervisorReview(requestInputEvt.Request);
-                    await handle.SendResponseAsync(response);
+                    await handle.SendResponseAsync(HandleSupervisorReview(requestInputEvt.Request));
                     break;
 
                 case WorkflowOutputEvent outputEvt:
-                    // The workflow has completed
                     Console.WriteLine();
-                    Console.WriteLine($"Output (type: {outputEvt.Data?.GetType().Name ?? "null"}): {outputEvt.Data}");
-                    Console.WriteLine();
-                    Console.WriteLine("Human-in-the-loop workflow completed!");
-                    return;
+                    Console.WriteLine("=== Workflow Output ===");
+                    Console.WriteLine(outputEvt.Data);
+                    break;
 
-                default:
-                    Console.WriteLine($"[EVENT] {evt.GetType().Name}: {evt}");
+                case ExecutorCompletedEvent completedEvt:
+                    Console.WriteLine($"[{completedEvt.ExecutorId}] completed");
                     break;
             }
         }
 
-        // If we exit the loop without a WorkflowOutputEvent, check the run status
-        var status = await handle.GetStatusAsync();
-        Console.WriteLine($"[INFO] WatchStreamAsync ended. Run status: {status}");
+        Console.WriteLine();
+        Console.WriteLine("Human-in-the-loop workflow completed!");
     }
 
     private static Workflow BuildWorkflow(IChatClient chatClient)
