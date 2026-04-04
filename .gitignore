@@ -11,3 +11,6 @@ appsettings.Local.json
 # Build output
 bin/
 obj/
+
+# Python
+__pycache__/
