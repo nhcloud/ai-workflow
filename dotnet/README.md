@@ -1,91 +1,84 @@
-# Lab 4 - Workflow Lab
+# AI Workflow Patterns - .NET
 
-This lab demonstrates three key workflow patterns using **Microsoft.Agents.AI.Workflows** in .NET 10, all using a **Customer Support Ticket System** as the example scenario.
+This project demonstrates three key workflow patterns using **Microsoft.Agents.AI.Workflows** in .NET 10, all using a **Customer Support Ticket System** as the example scenario.
 
-## 🎯 Learning Goals
+## Learning Goals
 
 1. **Sequential Workflow** - Process data through a linear AI pipeline
 2. **Concurrent Workflow** - Fan-out to multiple agents simultaneously
 3. **Human-in-the-Loop Workflow** - AI assistance with human oversight and approval
 
-## � Interactive Notebook
-
-To explore workflow concepts interactively, open and run the Jupyter notebook:
-```bash
-cd lab
-jupyter notebook workflow-concepts.ipynb
-```
-Or open `lab/workflow-concepts.ipynb` directly in VS Code.
-
-## �📝 Lab Exercises
-
-For hands-on exercises, see **[lab/EXERCISES.md](lab/EXERCISES.md)**.
-
-## 🏗️ Architecture
+## Architecture
 
 ### Sequential Workflow
 ```
-???????????????    ????????????????????    ???????????????????    ????????????????
-?   Ticket    ??????  Categorization  ??????    Response     ??????    Final     ?
-?   Intake    ?    ?   AI Agent       ?    ?    AI Agent     ?    ?   Response   ?
-???????????????    ????????????????????    ???????????????????    ????????????????
++---------------+    +--------------------+    +-------------------+
+|   Ticket      |--->|  Categorization    |--->|    Response        |
+|   Intake      |    |   AI Agent         |    |    AI Agent        |
++---------------+    +--------------------+    +-------------------+
 ```
 
 ### Concurrent Workflow
 ```
-                         ????????????????????
-                    ??????  Billing Expert  ??????
-???????????????     ?    ????????????????????    ?    ???????????????????
-?   Customer  ???????                            ??????    Combined     ?
-?   Question  ?     ?    ????????????????????    ?    ?    Response     ?
-???????????????     ?????? Technical Expert ??????    ???????????????????
-                         ????????????????????
+                         +--------------------+
+                    +--->|  Billing Expert    |---+
++---------------+   |    +--------------------+   |    +-------------------+
+|   Customer    |---+                              +-->|    Combined       |
+|   Question    |   |    +--------------------+   |    |    Response       |
++---------------+   +--->| Technical Expert   |---+    +-------------------+
+                         +--------------------+
 ```
 
 ### Human-in-the-Loop Workflow
 ```
-???????????????    ????????????????    ????????????????????    ????????????????
-?   Ticket    ??????   AI Draft   ??????  Human Review    ??????   Finalize   ?
-?   Intake    ?    ?    Agent     ?    ?  (RequestPort)   ?    ?   Response   ?
-???????????????    ????????????????    ????????????????????    ????????????????
-                                              ?
-                                              ?
-                                       ????????????????
-                                       ?  Supervisor  ?
-                                       ?  - Approve   ?
-                                       ?  - Edit      ?
-                                       ?  - Escalate  ?
-                                       ????????????????
++---------------+    +----------------+    +--------------------+    +----------------+
+|   Ticket      |--->|   AI Draft     |--->|  Human Review      |--->|   Finalize     |
+|   Intake      |    |    Agent       |    |  (RequestPort)     |    |   Response     |
++---------------+    +----------------+    +--------------------+    +----------------+
+                                                    |
+                                                    v
+                                             +----------------+
+                                             |  Supervisor    |
+                                             |  - Approve     |
+                                             |  - Edit        |
+                                             |  - Escalate    |
+                                             +----------------+
 ```
 
-## ?? Project Structure
+## Project Structure
 
 ```
-WorkflowLab/
-??? WorkflowLab.csproj                # Project with dependencies
-??? Program.cs                        # Interactive menu to select demos
-??? appsettings.json                  # Configuration template
-??? appsettings.Development.json      # Local dev settings (gitignored)
-?
-??? Common/                           # Shared components
-?   ??? AzureOpenAIClientFactory.cs  # Multi-auth Azure OpenAI client
-?   ??? SupportTicket.cs             # Shared models (SupportTicket, TicketPriority)
-?
-??? Sequential/                       # Sequential Workflow Demo
-?   ??? SequentialWorkflowDemo.cs    # Demo runner
-?   ??? Executors.cs                 # TicketIntakeExecutor, CategorizationBridgeExecutor, ResponseBridgeExecutor
-?
-??? Concurrent/                       # Concurrent Workflow Demo
-?   ??? ConcurrentWorkflowDemo.cs    # Demo runner
-?   ??? Executors.cs                 # ConcurrentStartExecutor, ConcurrentAggregationExecutor
-?
-??? HumanInTheLoop/                   # Human-in-the-Loop Demo
-    ??? HumanInTheLoopWorkflowDemo.cs # Demo runner
-    ??? Models.cs                     # SupervisorReviewRequest, SupervisorDecision, ReviewAction
-    ??? Executors.cs                  # HumanInTheLoopTicketIntakeExecutor, DraftBridgeExecutor, FinalizeExecutor
+dotnet/
+├── Workflow.csproj                   # Project file with dependencies
+├── Workflow.slnx                     # Solution file
+├── Program.cs                        # Interactive menu to select demos
+├── appsettings.Local.json.template   # Configuration template
+├── appsettings.Local.json            # Local dev settings (gitignored)
+├── start.cmd                         # Windows launch script
+├── start.sh                          # Linux/macOS launch script
+│
+├── Common/                           # Shared components
+│   ├── AzureOpenAIClientFactory.cs   # Multi-auth Azure OpenAI client
+│   ├── SupportTicket.cs              # Shared models (SupportTicket, TicketPriority)
+│   └── TicketLoader.cs               # Loads tickets from ../data/tickets.json
+│
+├── Sequential/                       # Sequential Workflow Demo
+│   ├── SequentialWorkflowDemo.cs     # Demo runner
+│   └── Executors.cs                  # TicketIntakeExecutor, CategorizationBridgeExecutor, ResponseBridgeExecutor
+│
+├── Concurrent/                       # Concurrent Workflow Demo
+│   ├── ConcurrentWorkflowDemo.cs     # Demo runner
+│   └── Executors.cs                  # ConcurrentStartExecutor, ConcurrentAggregationExecutor
+│
+└── HumanInTheLoop/                   # Human-in-the-Loop Demo
+    ├── HumanInTheLoopWorkflowDemo.cs # Demo runner
+    ├── Models.cs                     # SupervisorReviewRequest, SupervisorDecision, ReviewAction
+    └── Executors.cs                  # HumanInTheLoopTicketIntakeExecutor, DraftBridgeExecutor, FinalizeExecutor
 ```
 
-## ?? Running the Lab
+Ticket data is stored in `../data/tickets.json`, shared by both the .NET and Python projects.
+
+## Running the Lab
 
 ### Prerequisites
 
@@ -94,12 +87,19 @@ WorkflowLab/
 
 Configure Azure OpenAI using **one** of the following methods:
 
-#### Option A: Using appsettings.Development.json (Recommended for local dev)
+#### Option A: Using appsettings.Local.json (Recommended for local dev)
 
-1. Create `appsettings.Development.json` in the WorkflowLab folder:
+1. Copy the template to create your local config:
+
+```powershell
+copy appsettings.Local.json.template appsettings.Local.json
+```
+
+2. Edit `appsettings.Local.json` with your values:
 
 ```json
 {
+  "TICKETS_PATH": "..\\data\\tickets.json",
   "AzureOpenAI": {
     "Endpoint": "https://your-resource.openai.azure.com/",
     "DeploymentName": "gpt-4o-mini",
@@ -108,7 +108,7 @@ Configure Azure OpenAI using **one** of the following methods:
 }
 ```
 
-> ?? `appsettings.Development.json` should be gitignored to prevent committing secrets.
+> `appsettings.Local.json` should be gitignored to prevent committing secrets.
 
 #### Option B: Using Environment Variables
 
@@ -134,50 +134,57 @@ $env:AZURE_CLIENT_SECRET = "your-client-secret"
 ### Run the Lab
 
 ```powershell
-cd WorkflowLab
+cd dotnet
 dotnet run
+```
+
+Or use the launch script:
+
+```powershell
+.\start.cmd
 ```
 
 ### Select a Demo
 
 ```
-???????????????????????????????????????????????????????????????????????
-?                       WORKFLOW LAB                                  ?
-?           Microsoft.Agents.AI Workflow Patterns                     ?
-???????????????????????????????????????????????????????????????????????
+=====================================================================
+                        WORKFLOW LAB
+            Microsoft.Agents.AI Workflow Patterns
+=====================================================================
 
 Select a workflow demo to run:
 
-  [1] ?? Sequential Workflow
+  [1] Sequential Workflow
       Process tickets through a linear AI pipeline
-      (Intake ? Categorization ? Response)
+      (Intake -> Categorization -> Response)
 
-  [2] ? Concurrent Workflow
+  [2] Concurrent Workflow
       Fan-out questions to multiple specialist agents
-      (Question ? [Billing + Technical Experts] ? Combined)
+      (Question -> [Billing + Technical Experts] -> Combined)
 
-  [3] ?? Human-in-the-Loop Workflow
+  [3] Human-in-the-Loop Workflow
       AI-assisted responses with human supervisor review
-      (Ticket ? AI Draft ? Human Review ? Final Response)
+      (Ticket -> AI Draft -> Human Review -> Final Response)
 
   [Q] Exit
 ```
 
-## ?? Configuration Reference
+## Configuration Reference
 
-### appsettings.json Schema
+### appsettings.Local.json Schema
 
 ```json
 {
+  "TICKETS_PATH": "..\\data\\tickets.json",
   "AzureOpenAI": {
     "Endpoint": "https://your-resource.openai.azure.com/",
     "DeploymentName": "gpt-4o-mini",
-    
     "ApiKey": "your-api-key",
-    
     "TenantId": "your-tenant-id",
     "ClientId": "your-client-id",
-    "ClientSecret": "your-client-secret"
+    "ClientSecret": "your-client-secret",
+    "UseManagedIdentity": "false",
+    "ManagedIdentityClientId": ""
   }
 }
 ```
@@ -185,13 +192,12 @@ Select a workflow demo to run:
 ### Configuration Priority
 
 1. **Environment Variables** (highest priority)
-2. **appsettings.Development.json**
-3. **appsettings.json** (lowest priority)
+2. **appsettings.Local.json** (lowest priority)
 
 ### Environment Variable Mapping
 
-| appsettings.json Key | Environment Variable |
-|---------------------|---------------------|
+| appsettings.Local.json Key | Environment Variable |
+|---------------------------|---------------------|
 | `AzureOpenAI:Endpoint` | `AZURE_OPENAI_ENDPOINT` |
 | `AzureOpenAI:DeploymentName` | `AZURE_OPENAI_DEPLOYMENT_NAME` |
 | `AzureOpenAI:ApiKey` | `AZURE_OPENAI_API_KEY` |
