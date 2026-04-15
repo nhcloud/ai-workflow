@@ -205,7 +205,7 @@ Select a workflow demo to run:
 | `AzureOpenAI:ClientId` | `AZURE_CLIENT_ID` |
 | `AzureOpenAI:ClientSecret` | `AZURE_CLIENT_SECRET` |
 
-## ?? Key Concepts
+## Key Concepts
 
 ### 1. Executors
 
@@ -314,21 +314,20 @@ await foreach (WorkflowEvent evt in run.WatchStreamAsync())
 }
 ```
 
-## ?? Workflow Pattern Comparison
+## Workflow Pattern Comparison
 
 | Pattern | Use Case | Key Methods | Example |
 |---------|----------|-------------|---------|
-| **Sequential** | Linear processing pipeline | `AddEdge()` | Ticket ? Categorize ? Respond |
+| **Sequential** | Linear processing pipeline | `AddEdge()` | Ticket -> Categorize -> Respond |
 | **Concurrent** | Parallel processing | `AddFanOutEdge()` / `AddFanInEdge()` | Multi-expert analysis |
 | **Human-in-the-Loop** | Human oversight/approval | `RequestPort`, `RequestInfoEvent` | Supervisor review |
 
-## ?? Learn More
+## Learn More
 
-- See [workflow-concepts.ipynb](workflow-concepts.ipynb) for detailed explanations
 - [Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/)
 - [Azure OpenAI Service](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 
-## ?? Lab Exercises
+## Lab Exercises
 
 ### Exercise 1: Add a New Sequential Step
 Add a "Sentiment Analysis" step between Ticket Intake and Categorization.
@@ -339,14 +338,14 @@ Add a "Policy Expert" agent to the Concurrent workflow.
 ### Exercise 3: Add Rejection Flow
 Modify the Human-in-the-Loop workflow to allow supervisors to reject tickets and request more information from the customer.
 
-## ?? Dependencies
+## Dependencies
 
-This lab uses the following NuGet packages:
+This project uses the following NuGet packages:
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `Microsoft.Agents.AI.Workflows` | 1.0.0-preview | Core workflow framework |
-| `Azure.AI.OpenAI` | 2.8.0-beta.1 | Azure OpenAI client |
-| `Azure.Identity` | 1.17.1 | Azure authentication |
-| `Microsoft.Extensions.AI.OpenAI` | 10.1.1-preview | AI abstractions |
-| `Microsoft.Extensions.Configuration.*` | 9.0.6 | Configuration management |
+| `Microsoft.Agents.AI.Workflows` | 1.0.0 | Core workflow framework |
+| `Azure.AI.OpenAI` | 2.9.0-beta.1 | Azure OpenAI client |
+| `Azure.Identity` | 1.20.0 | Azure authentication |
+| `Microsoft.Extensions.AI.OpenAI` | 10.4.1 | AI abstractions |
+| `Microsoft.Extensions.Configuration.*` | 11.0.0-preview | Configuration management |
