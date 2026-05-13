@@ -1,6 +1,7 @@
 using WorkflowLab.Sequential;
 using WorkflowLab.Concurrent;
 using WorkflowLab.HumanInTheLoop;
+using WorkflowLab.GroupChat;
 
 /// <summary>
 /// Workflow Lab - Main Entry Point
@@ -15,6 +16,9 @@ using WorkflowLab.HumanInTheLoop;
 /// 
 /// 3. Human-in-the-Loop Workflow: AI assistance with human oversight
 ///    - Ticket -> AI Draft -> [Human Review/Approval] -> Final Response
+///
+/// 4. Group Chat Workflow: Multi-agent collaborative refinement
+///    - Ticket -> [CopyWriter <-> ToneCoach <-> Reviewer] -> Approved Response
 /// 
 /// All demos use a Customer Support Ticket System as the example scenario.
 /// </summary>
@@ -57,12 +61,16 @@ Console.WriteLine("  [3] Human-in-the-Loop Workflow");
 Console.WriteLine("      AI-assisted responses with human supervisor review");
 Console.WriteLine("      (Ticket -> AI Draft -> Human Review -> Final Response)");
 Console.WriteLine();
+Console.WriteLine("  [4] Group Chat Workflow");
+Console.WriteLine("      Multi-agent collaboration with iterative refinement");
+Console.WriteLine("      (Ticket -> [CopyWriter + ToneCoach + Reviewer] -> Approved Response)");
+Console.WriteLine();
 Console.WriteLine("  [Q] Exit");
 Console.WriteLine();
 
 while (true)
 {
-    Console.Write("Enter your choice (1-3 or Q): ");
+    Console.Write("Enter your choice (1-4 or Q): ");
     var choice = Console.ReadLine()?.Trim().ToUpperInvariant();
 
     Console.WriteLine();
@@ -83,12 +91,16 @@ while (true)
                 await HumanInTheLoopWorkflowDemo.RunAsync();
                 break;
 
+            case "4":
+                await GroupChatWorkflowDemo.RunAsync();
+                break;
+
             case "Q":
                 Console.WriteLine("Thank you for completing the Workflow Lab!");
                 return;
 
             default:
-                Console.WriteLine("Invalid choice. Please enter 1, 2, 3, or Q.");
+                Console.WriteLine("Invalid choice. Please enter 1, 2, 3, 4, or Q.");
                 continue;
         }
     }
@@ -103,7 +115,7 @@ while (true)
     Console.WriteLine();
     Console.WriteLine("=====================================================================");
     Console.WriteLine();
-    Console.WriteLine("Run another demo? (1-3 or Q to exit)");
+    Console.WriteLine("Run another demo? (1-4 or Q to exit)");
 }
 
 static string FindConfigPath(string startPath)

@@ -12,6 +12,9 @@ This lab demonstrates three key workflow patterns using Python with Azure OpenAI
 3. Human-in-the-Loop Workflow: AI assistance with human oversight
    - Ticket -> AI Draft -> [Human Review/Approval] -> Final Response
 
+4. Group Chat Workflow: Multi-agent collaborative refinement
+   - Ticket -> [CopyWriter <-> ToneCoach <-> Reviewer] -> Approved Response
+
 All demos use a Customer Support Ticket System as the example scenario.
 """
 
@@ -64,6 +67,7 @@ load_env_from_root()
 from sequential import SequentialWorkflowDemo
 from concurrent_workflow import ConcurrentWorkflowDemo
 from human_in_the_loop import HumanInTheLoopWorkflowDemo
+from group_chat import GroupChatWorkflowDemo
 
 
 def print_header():
@@ -104,6 +108,10 @@ def print_menu():
     print("      AI-assisted responses with human supervisor review")
     print("      (Ticket -> AI Draft -> Human Review -> Final Response)")
     print()
+    print("  [4] Group Chat Workflow")
+    print("      Multi-agent collaboration with iterative refinement")
+    print("      (Ticket -> [CopyWriter + ToneCoach + Reviewer] -> Approved Response)")
+    print()
     print("  [Q] Exit")
     print()
 
@@ -122,11 +130,13 @@ async def run_demo(choice: str) -> bool:
             await ConcurrentWorkflowDemo.run_async()
         elif choice == "3":
             await HumanInTheLoopWorkflowDemo.run_async()
+        elif choice == "4":
+            await GroupChatWorkflowDemo.run_async()
         elif choice.upper() == "Q":
             print("Thank you for using Workflow Lab. Goodbye!")
             return False
         else:
-            print("Invalid choice. Please enter 1, 2, 3, or Q.")
+            print("Invalid choice. Please enter 1, 2, 3, 4, or Q.")
     except Exception as e:
         print(f"\nError running demo: {e}")
         print("Please check your Azure OpenAI configuration and try again.")
@@ -140,7 +150,7 @@ async def main():
     print_menu()
     
     while True:
-        choice = input("Enter your choice (1-3 or Q): ").strip()
+        choice = input("Enter your choice (1-4 or Q): ").strip()
         print()
         
         should_continue = await run_demo(choice)
