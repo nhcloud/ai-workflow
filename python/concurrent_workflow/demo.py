@@ -42,7 +42,7 @@ class ChatClientAgent:
                 {"role": "system", "content": self.instructions},
                 {"role": "user", "content": message}
             ],
-            max_tokens=200
+            max_completion_tokens=200
         )
         return response.choices[0].message.content
 

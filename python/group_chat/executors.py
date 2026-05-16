@@ -74,7 +74,7 @@ class GroupChatParticipant:
         response = self.client.chat.completions.create(
             model=self.deployment,
             messages=messages,
-            max_tokens=400,
+            max_completion_tokens=400,
         )
         return response.choices[0].message.content or ""
 
